@@ -1,5 +1,5 @@
-import { useQuery, gql, use, useMutation } from "@apollo/client";
-import { useState, useEffect } from "react";
+import { useQuery, gql, useMutation } from "@apollo/client";
+import { useState } from "react";
 
 const GET_TODOS = gql`
   query getTodos {
@@ -64,7 +64,7 @@ function App() {
   const [deleteTodo] = useMutation(DELETE_TODO);
 
   async function handleToggleTodo({ id, done }) {
-    const data = await toggleTodo({
+    await toggleTodo({
       variables: {
         id,
         done: !done,
@@ -75,7 +75,7 @@ function App() {
   async function handleAddTodo(e) {
     e.preventDefault();
     if (!todotext.trim()) return;
-    const data = await addTodo({
+    await addTodo({
       variables: { text: todotext },
       refetchQueries: [
         {
@@ -95,7 +95,6 @@ function App() {
         update: (cache) => {
           const prevData = cache.readQuery({ query: GET_TODOS });
           const newTodos = prevData.todos.filter((todo) => todo.id !== id);
-          console.log(prevData, newTodos);
           cache.writeQuery({
             query: GET_TODOS,
             data: { todos: newTodos },
@@ -108,7 +107,6 @@ function App() {
   if (loading) return <div>loading...</div>;
   if (error) return <div>error fetching data</div>;
 
-  console.log(data);
   return (
     <div className="vh-100 code flex flex-column items-center bg-purple white pa3 fl-1">
       <h1 className="f2-l">
